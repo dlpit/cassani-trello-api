@@ -1,0 +1,13 @@
+{
+  "name": "Casani-Note-Api",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Cassani by DLP.IT",
+  "main": "src/server.js",
+  "author": "quochuy",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
