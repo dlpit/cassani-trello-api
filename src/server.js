@@ -3,13 +3,12 @@ import express from 'express'
 import exitHook from 'async-exit-hook'
 import { CONECT_MONGODB, CLOSE_MONGODB } from '~/config/mongodb'
 import { ENV } from '~/config/environment'
+import { APIs_V1 } from '~/routes/v1'
 
 const START_SERVER = () => {
   const app = express()
 
-  app.get('/', async (req, res) => {
-    res.end('<h1>Hello World!</h1><hr>')
-  })
+  app.use('/v1', APIs_V1)
 
   app.listen(ENV.APP_PORT, ENV.APP_HOST, () => {
     console.log(`Hello ${ENV.AUTHOR} am running at http://${ ENV.APP_HOST }:${ ENV.APP_PORT }/`)
