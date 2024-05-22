@@ -26,9 +26,9 @@ const createNew = async (req, res, next) => {
    */
   try {
     // Chỉ định abortEarly: fasle để trả về tất cả các lỗi không chỉ lỗi đầu tiên
-    await schema .validateAsync(req.body, { abortEarly: false })
 
-    // Nếu không có lỗi thì chuyển tiếp cho Controller tiếp theo
+    await schema.validateAsync(req.body, { abortEarly: false })
+    // Validate dữ liệu thành công thì chuyển sang Controller tiếp theo
     next()
   } catch (error) {
     next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
