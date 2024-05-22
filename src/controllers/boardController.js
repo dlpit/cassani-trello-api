@@ -1,8 +1,11 @@
+
+/* eslint-disable no-console */
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 
 const createNew = async (req, res, next) => {
   try {
+
     // console.log('req.body', req.body)
     // console.log(req.query)
     // console.log(req.params)

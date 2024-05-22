@@ -17,7 +17,7 @@ const createNew = async (req, res, next) => {
       'string.min': 'Description must have at least 3 characters',
       'string.max': 'Description must have at most 255 characters',
       'any.required': 'Description is required'
-    }),
+    })
   })
   /**
    * Note: Mặc định không cần phải custom message ở BE vì FE sẽ tự validate và custom message cho đẹp
@@ -26,6 +26,7 @@ const createNew = async (req, res, next) => {
    */
   try {
     // Chỉ định abortEarly: fasle để trả về tất cả các lỗi không chỉ lỗi đầu tiên
+
     await schema.validateAsync(req.body, { abortEarly: false })
     // Validate dữ liệu thành công thì chuyển sang Controller tiếp theo
     next()
