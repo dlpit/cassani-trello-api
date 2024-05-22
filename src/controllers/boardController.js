@@ -1,7 +1,7 @@
 
 /* eslint-disable no-console */
 import { StatusCodes } from 'http-status-codes'
-import ApiError from '~/utils/ApiError'
+import { boardService } from '~/services/boardService'
 
 const createNew = async (req, res, next) => {
   try {
@@ -14,9 +14,10 @@ const createNew = async (req, res, next) => {
     // console.log(req.jwtDecoded)
 
     // Điều hướng dữ liệu sang tầng service
+    const createNewBoard = await boardService.createNew(req.body)
 
     // Có kết quả thì trả về phía client
-    res.status(StatusCodes.CREATED).json({ message : 'POST from Controller' })
+    res.status(StatusCodes.CREATED).json(createNewBoard)
   } catch (error) { next(error) }
 }
 
