@@ -1,5 +1,6 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
+import ApiError from '~/utils/ApiError'
 
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
@@ -24,19 +25,12 @@ const createNew = async (req, res, next) => {
    * Quan trọng là việc Validate dữ liệu bắt buộc phải có từ 2 phía
    */
   try {
-    console.log(req.body)
-
     // Chỉ định abortEarly: fasle để trả về tất cả các lỗi không chỉ lỗi đầu tiên
-    await schema .validateAsync(req.body, { abortEarly: false })
-
-    // next()
-    res.status(StatusCodes.CREATED).json({ message : 'POST from Validation' })
+    await schema.validateAsync(req.body, { abortEarly: false })
+    // Validate dữ liệu thành công thì chuyển sang Controller tiếp theo
+    next()
   } catch (error) {
-    console.log(error)
-    console.log(new Error(error))
-    res.status(StatusCodes.UNPROCESSABLE_ENTITY).json({
-      errors: new Error(error).message
-    })
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
   }
 }
 
