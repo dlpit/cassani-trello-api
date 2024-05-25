@@ -1,6 +1,7 @@
 import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
+import { BOARD_TYPES } from '~/utils/constants'
 
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
@@ -17,7 +18,8 @@ const createNew = async (req, res, next) => {
       'string.min': 'Description must have at least 3 characters',
       'string.max': 'Description must have at most 255 characters',
       'any.required': 'Description is required'
-    })
+    }),
+    type: Joi.string().required().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE)
   })
   /**
    * Note: Mặc định không cần phải custom message ở BE vì FE sẽ tự validate và custom message cho đẹp
