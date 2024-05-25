@@ -1,5 +1,5 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
+// Những domain mà bạn muốn chấp nhận lấy tài nguyên từ server của bạn
+export const WHITELIST_DOMAINS = [
+  'http://localhost:5173'
+  // và các domain khác mà bạn muốn chấp nhận
+]
