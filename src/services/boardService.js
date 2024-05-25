@@ -3,6 +3,7 @@ import { slugify } from '~/utils/formatters'
 import { boardModel } from '~/models/boardModel'
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
+import { cloneDeep } from 'lodash'
 
 const createNew = async (reqBody) => {
   try {
@@ -28,7 +29,20 @@ const getDetails = async (boardId) => {
   try {
     const board = await boardModel.getDetails(boardId)
     if (!board) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
-    return board
+
+    // Clone board ra một bản sao để tránh ảnh hưởng dữ liệu gốc
+    const clonedBoard = cloneDeep(board)
+    // Đưa card vào đúng column
+    clonedBoard.columns.forEach(column => {
+      // column.cards = clonedBoard.cards.filter(card => card.columnId.toString() === column._id.toString())
+
+      // Sử dụng ObjectId.equals() do MongoDB support so sánh ObjectId
+      column.cards = clonedBoard.cards.filter(card => card.columnId.equals(column._id))
+    })
+
+    // Xóa trường cards ở board gốc
+    delete clonedBoard.cards
+    return clonedBoard
   } catch (error) { throw error }
 }
 
