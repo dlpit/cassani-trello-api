@@ -19,6 +19,9 @@ const BOADRD_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
+// Define 2 trường không được phép update
+const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
+
 const validateBeforeCreate = async (data) => {
   return await BOADRD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
@@ -81,10 +84,27 @@ const pushColumnOrderIds = async (column) => {
       },
       { returnDocument: 'after' }
     )
-    return result.value
+    return result
   } catch (error) {
     throw new Error(error)
   }
+}
+
+const update = async (boardId, updateData) => {
+  try {
+    Object.keys(updateData).forEach(key => {
+      if (INVALID_UPDATE_FIELDS.includes(key)) {
+        delete updateData[key]
+      }
+    })
+    
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(boardId) },
+      { $set: { ...updateData } },
+      { returnDocument: 'after' }
+    )
+    return result
+  } catch (error) { throw new Error(error) }
 }
 
 export const boardModel = {
@@ -93,5 +113,6 @@ export const boardModel = {
   createNew,
   findOneById,
   getDetails,
-  pushColumnOrderIds
+  pushColumnOrderIds,
+  update
 }
