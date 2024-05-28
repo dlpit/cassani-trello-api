@@ -98,6 +98,11 @@ const update = async (boardId, updateData) => {
       }
     })
 
+    // Đối với những trường dữ liệu cần phải chuyển đổi sang ObjectId
+    if (updateData.columnOrderIds) {
+      updateData.columnOrderIds = updateData.columnOrderIds.map(columnId => new ObjectId(columnId))
+    }
+
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(boardId) },
       { $set: { ...updateData } },
