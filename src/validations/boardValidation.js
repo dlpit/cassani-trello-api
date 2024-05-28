@@ -2,6 +2,7 @@ import Joi from 'joi'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 import { BOARD_TYPES } from '~/utils/constants'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
 
 const createNew = async (req, res, next) => {
   const schema = Joi.object({
@@ -37,6 +38,27 @@ const createNew = async (req, res, next) => {
   }
 }
 
+const update = async (req, res, next) => {
+  // Không required() trong trường hợp update
+  const schema = Joi.object({
+    title: Joi.string().min(3).max(72).trim().strict(),
+    description: Joi.string().min(3).max(255).trim().strict(),
+    type: Joi.string().valid(BOARD_TYPES.PUBLIC, BOARD_TYPES.PRIVATE),
+    columnOrderIds: Joi.array().items(Joi.string().pattern(OBJECT_ID_RULE).message(OBJECT_ID_RULE_MESSAGE))
+  })
+  try {
+    // Chỉ định abortEarly: fasle để trả về tất cả các lỗi không chỉ lỗi đầu tiên
+    // Đối với trường hợp update, không cần phải validate tất cả các field (allowUnknown: true)
+    await schema.validateAsync(req.body, {
+      abortEarly: false,
+      allowUnknown: true
+    })
+    next()
+  } catch (error) {
+    next(new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, new Error(error).message))
+  }
+}
 export const boardValidation = {
-  createNew
+  createNew,
+  update
 }
