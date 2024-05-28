@@ -42,6 +42,7 @@ const update = async (req, res, next) => {
     res.status(StatusCodes.OK).json(updateBoard)
   } catch (error) { next(error) }
 }
+
 export const boardController = {
   createNew,
   getDetails,
