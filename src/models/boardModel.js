@@ -112,6 +112,24 @@ const update = async (boardId, updateData) => {
   } catch (error) { throw new Error(error) }
 }
 
+// Hàm cập nhật mảng columnOrderIds bằng cách pull value columnId ra khỏi mảng trong collection boards
+const pullColumnOrderIds = async (column) => {
+  try {
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(column.boardId) },
+      {
+        $pull: {
+          columnOrderIds: new ObjectId(column._id)
+        }
+      },
+      { returnDocument: 'after' }
+    )
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+
 export const boardModel = {
   BOARD_COLLECTION_NAME,
   BOADRD_COLLECTION_SCHEMA,
@@ -119,5 +137,6 @@ export const boardModel = {
   findOneById,
   getDetails,
   pushColumnOrderIds,
-  update
+  update,
+  pullColumnOrderIds
 }
