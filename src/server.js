@@ -23,10 +23,17 @@ const START_SERVER = () => {
   // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
 
-  app.listen(ENV.APP_PORT, ENV.APP_HOST, () => {
-    console.log(`Hello ${ENV.AUTHOR} am running at http://${ ENV.APP_HOST }:${ ENV.APP_PORT }/`)
-  })
-
+  if (ENV.BUILD_MODE === 'production') {
+    // Môi trường production
+    app.listen(process.env.PORT, () => {
+      console.log(`Production ${ENV.AUTHOR} running at Port: ${ process.env.PORT }/`)
+    })
+  } else {
+    // Môi trương development
+    app.listen(ENV.LOCAL_DEV_APP_PORT, ENV.LOCAL_DEV_APP_HOST, () => {
+      console.log(`Hello ${ENV.AUTHOR} am running at http://${ ENV.LOCAL_DEV_APP_HOST }:${ ENV.LOCAL_DEV_APP_PORT }/`)
+    })
+  }
   // Clean up before shutdown server
   exitHook(() => {
     console.log('Cleaning up...')
