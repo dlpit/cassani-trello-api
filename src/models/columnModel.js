@@ -19,7 +19,7 @@ const COLUMN_COLLECTION_SCHEMA = Joi.object({
   _destroy: Joi.boolean().default(false)
 })
 
-// Define 2 trường không được phép update
+// Define 3 trường không được phép update
 const INVALID_UPDATE_FIELDS = ['_id', 'boardId', 'createAt']
 
 const validateBeforeCreate = async (data) => {
@@ -74,6 +74,11 @@ const update = async (columnId, updateData) => {
         delete updateData[key]
       }
     })
+
+    // Đối với những trường dữ liệu cần phải chuyển đổi sang ObjectId
+    if (updateData.cardOrderIds) {
+      updateData.cardOrderIds = updateData.cardOrderIds.map(cardId => new ObjectId(cardId))
+    }
 
     const result = await GET_DB().collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(columnId) },
