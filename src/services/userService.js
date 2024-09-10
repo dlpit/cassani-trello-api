@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes'
 import bcryptjs from 'bcryptjs'
 import { v4 as uuidv4 } from 'uuid'
 import { pickUser } from '~/utils/formatters'
+import { WEBSITE_DOMAIN } from '~/utils/constants'
+import { BrevoProvider } from '~/providers/BrevoProvider'
 
 const createNew = async (reqBody) => {
   try {
@@ -28,9 +30,18 @@ const createNew = async (reqBody) => {
     const getNewUser = await userModel.findOneById(createdUser.insertedId)
 
     // Gửi email xác thực tài khoản
+    const emailVerificationUrl = `${WEBSITE_DOMAIN}/account/verification?token=${getNewUser.verifyToken}&email=${getNewUser.email}`
+    const customSubject = 'Account Verification Instructions'
+    const customHtmlContext = 'Thank you for registering an account on our website.Finally, To complete the final step for account verification, please click the button below to verify.'
+    const nameBtn = 'Verify Account'
+
+    // Gửi emai: Sử dụng Brevo API
+    await BrevoProvider.sendEmail(getNewUser.email, getNewUser.displayName, emailVerificationUrl, customSubject, customHtmlContext, nameBtn)
 
     return pickUser(getNewUser)
-  } catch (error) { throw error }
+  } catch (error) {
+    throw error
+  }
 }
 
 export const userService = {
