@@ -44,6 +44,32 @@ const createNew = async (reqBody) => {
   }
 }
 
+const verifyAccount = async (reqBody) => {
+  try {
+    // Kiểm tra email đã tồn tại chưa
+    const exitsUser = await userModel.findOneByEmail(reqBody.email)
+    if (!exitsUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+
+    // Kiểm tra tài khoản đã được xác thực chưa
+    if (exitsUser.isActive) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Account is already verified!')
+    }
+
+    // Kiểm tra token có đúng không
+    if (reqBody.token !== exitsUser.verifyToken) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Invalid token!')
+    }
+
+    // Cập nhật isActive thành true
+    const updateData = { isActive: true, verifyToken: null }
+    const updatedUser = await userModel.update(exitsUser._id, updateData)
+
+    return pickUser(updatedUser)
+  } catch (error) {
+    throw error
+  }
+}
 export const userService = {
-  createNew
+  createNew,
+  verifyAccount
 }
