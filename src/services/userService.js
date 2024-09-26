@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { pickUser } from '~/utils/formatters'
 import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
+import { JwtProvider } from '~/providers/JwtProvider'
+import { ENV } from '~/config/environment'
 
 const createNew = async (reqBody) => {
   try {
@@ -69,7 +71,46 @@ const verifyAccount = async (reqBody) => {
     throw error
   }
 }
+
+const login = async (reqBody) => {
+  try {
+    // Kiểm tra email đã tồn tại chưa
+    const exitsUser = await userModel.findOneByEmail(reqBody.email)
+    // Kiểm tra tài khoản
+    if (!exitsUser) throw new ApiError(StatusCodes.NOT_FOUND, 'Account not found!')
+    if (!exitsUser.isActive) throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Account is not verified!')
+
+    // Kiểm tra mật khẩu
+    if (!bcryptjs.compareSync(reqBody.password, exitsUser.password)) {
+      throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your email or password is incorrect!')
+    }
+
+    // Tạo token
+    // Tạo thông tin đính kèm trong JWT Token: bao gòm _id và email
+    const userInfor = { _id: exitsUser._id, email: exitsUser.email }
+
+    // Tạo 2 token là accessToken và refreshToken
+    const accessToken = await JwtProvider.generateToken(
+      userInfor,
+      ENV.ACCESS_TOKEN_SECRET_SIGNATURE,
+      ENV.ACCESS_TOKEN_LIFE
+    )
+
+    const refreshToken = await JwtProvider.generateToken(
+      userInfor,
+      ENV.REFRESH_TOKEN_SECRET_SIGNATURE,
+      ENV.REFRESH_TOKEN_LIFE
+    )
+
+    return {
+      accessToken,
+      refreshToken,
+      ...pickUser(exitsUser)
+    }
+  } catch (error) { throw error }
+}
 export const userService = {
   createNew,
-  verifyAccount
+  verifyAccount,
+  login
 }
