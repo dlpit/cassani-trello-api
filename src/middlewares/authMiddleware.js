@@ -20,7 +20,7 @@ const isAuthorzied = async (req, res, next) => {
   } catch (error) {
     // console.log('AuthMiddleware -> error', error)
 
-    // Trả về mã lỗi 401 khi accessToken hết hạn
+    // Trả về mã lỗi 401 khi accessToken hết hạnt
     if (error?.message?.includes('jwt expired')) {
       next(new ApiError(StatusCodes.GONE, 'Need to refresh token!'))
       return
