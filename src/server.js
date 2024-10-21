@@ -35,12 +35,12 @@ const START_SERVER = () => {
   if (ENV.BUILD_MODE === 'production') {
     // Môi trường production
     app.listen(process.env.PORT, () => {
-      console.log(`Production ${ENV.AUTHOR} running at Port: ${ process.env.PORT }/`)
+      console.log(`Production ${ENV.AUTHOR} running at Port: ${process.env.PORT}`)
     })
   } else {
     // Môi trương development
     app.listen(ENV.LOCAL_DEV_APP_PORT, ENV.LOCAL_DEV_APP_HOST, () => {
-      console.log(`Hello ${ENV.AUTHOR} am running at http://${ ENV.LOCAL_DEV_APP_HOST }:${ ENV.LOCAL_DEV_APP_PORT }/`)
+      console.log(`Hello ${ENV.AUTHOR} am running at http://${ENV.LOCAL_DEV_APP_HOST}:${ENV.LOCAL_DEV_APP_PORT}/`)
     })
   }
   // Clean up before shutdown server

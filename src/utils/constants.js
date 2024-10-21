@@ -4,7 +4,7 @@ import { ENV } from '~/config/environment'
 export const WHITELIST_DOMAINS = [
   // 'http://localhost:5173' // Không cần localhost vì ở file config/cors đã luôn chấp nhận môi trường
   // và các domain khác mà bạn muốn chấp nhận
-  'ENV.WEBSITE_DOMAIN_PRODUCTION'
+  ENV.WEBSITE_DOMAIN_PRODUCTION
 ]
 
 export const BOARD_TYPES = {
