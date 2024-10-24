@@ -13,7 +13,7 @@ import path from 'path' // Import 'path' module
 const { fileURLToPath } = require('url')
 const { dirname } = require('path')
 
-const __filename = fileURLToPath(import.meta.url) // Sử dụng import.meta.url để lấy đường dẫn file
+const __filename = fileURLToPath('./server.js', import.meta.url)
 const __dirname = dirname(__filename)
 
 const START_SERVER = () => {
