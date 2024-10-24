@@ -8,6 +8,12 @@ import { ENV } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+// Import thêm path và __dirname cho ESM modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const START_SERVER = () => {
   const app = express()
@@ -33,6 +39,15 @@ const START_SERVER = () => {
   app.use(errorHandlingMiddleware)
 
   if (ENV.BUILD_MODE === 'production') {
+
+    // Serve static files từ thư mục dist (thư mục build của Vite)
+    app.use(express.static(path.join(__dirname, 'dist')))
+
+    // Route tất cả các request không phải API về index.html
+    app.get(/^(?!\/v1).*$/, (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+    })
+
     // Môi trường production
     app.listen(process.env.PORT, () => {
       console.log(`Production ${ENV.AUTHOR} running at Port: ${process.env.PORT}`)
