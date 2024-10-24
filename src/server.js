@@ -8,13 +8,9 @@ import { ENV } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
-import path from 'path' // Import 'path' module
+import path from 'path'
 
-const { fileURLToPath } = require('url')
-const { dirname } = require('path')
-
-const __filename = fileURLToPath('./server.js', import.meta.url)
-const __dirname = dirname(__filename)
+const __dirname = path.resolve() // Lấy đường dẫn đến thư mục hiện tại
 
 const START_SERVER = () => {
   const app = express()
@@ -54,7 +50,7 @@ const START_SERVER = () => {
       console.log(`Production ${ENV.AUTHOR} running at Port: ${process.env.PORT}`)
     })
   } else {
-    // Môi trương development
+    // Môi trường development
     app.listen(ENV.LOCAL_DEV_APP_PORT, ENV.LOCAL_DEV_APP_HOST, () => {
       console.log(`Hello ${ENV.AUTHOR} am running at http://${ENV.LOCAL_DEV_APP_HOST}:${ENV.LOCAL_DEV_APP_PORT}/`)
     })
