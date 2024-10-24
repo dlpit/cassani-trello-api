@@ -8,12 +8,11 @@ import { ENV } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
-import path from 'path'
-import { fileURLToPath } from 'url'
+const { fileURLToPath } = require('url')
+const { dirname } = require('path')
 
-// Import thêm path và __dirname cho ESM modules
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __filename = fileURLToPath(__filename)
+const __dirname = dirname(__filename)
 
 const START_SERVER = () => {
   const app = express()
