@@ -8,10 +8,12 @@ import { ENV } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
+import path from 'path' // Import 'path' module
+
 const { fileURLToPath } = require('url')
 const { dirname } = require('path')
 
-const __filename = fileURLToPath(__filename)
+const __filename = fileURLToPath(import.meta.url) // Sử dụng import.meta.url để lấy đường dẫn file
 const __dirname = dirname(__filename)
 
 const START_SERVER = () => {
@@ -22,6 +24,7 @@ const START_SERVER = () => {
     res.set('Cache-Control', 'no-store')
     next()
   })
+
   // Enable req.cookies
   app.use(cookieParser())
 
@@ -38,7 +41,6 @@ const START_SERVER = () => {
   app.use(errorHandlingMiddleware)
 
   if (ENV.BUILD_MODE === 'production') {
-
     // Serve static files từ thư mục dist (thư mục build của Vite)
     app.use(express.static(path.join(__dirname, 'dist')))
 
@@ -57,16 +59,16 @@ const START_SERVER = () => {
       console.log(`Hello ${ENV.AUTHOR} am running at http://${ENV.LOCAL_DEV_APP_HOST}:${ENV.LOCAL_DEV_APP_PORT}/`)
     })
   }
+
   // Clean up before shutdown server
   exitHook(() => {
     console.log('Cleaning up...')
     CLOSE_MONGODB()
     console.log('Closed MongoDB connection!')
   })
-}
+};
 
 // Chỉ kết nối tới MongoDB khi đã kết nối thành công thì mới khởi tạo server
-// https://stackoverflow.com/questions/14031763/doing-a-cleanup-action-just-before-node-js-exits
 (async () => {
   try {
     await CONECT_MONGODB()
@@ -77,12 +79,3 @@ const START_SERVER = () => {
     process.exit(0)
   }
 })()
-
-// // Chỉ kết nối tới MongoDB khi đã kết nối thành công thì mới khởi tạo server
-// CONECT_MONGODB()
-//   .then(() => console.log('Connected to MongoDB successfully!'))
-//   .then(() => START_SERVER())
-//   .catch(e => {
-//     console.error(e)
-//     process.exit(0)
-//   })
