@@ -8,6 +8,7 @@ import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { JwtProvider } from '~/providers/JwtProvider'
 import { ENV } from '~/config/environment'
+import { CloudinaryProvider } from '~/providers/CloudinaryProvider'
 
 const createNew = async (reqBody) => {
   try {
@@ -132,7 +133,7 @@ const refreshToken = async (clientRefreshToken) => {
   } catch (error) { throw error }
 }
 
-const update = async (userId, reqBody) => {
+const update = async (userId, reqBody, userAvatarFile) => {
   try {
     // Kiểm tra userId có tồn tại không
     const exitsUser = await userModel.findOneById(userId)
@@ -149,6 +150,12 @@ const update = async (userId, reqBody) => {
 
       // Cập nhật mật khẩu mới
       updatedUser = await userModel.update(userId, { password: bcryptjs.hashSync(reqBody.new_password, 8) })
+    } else if (userAvatarFile) {
+      // Cập nhật avatar
+      const uploadResult = await CloudinaryProvider.streamUpload(userAvatarFile.buffer, 'users')
+      // console.log('update -> uploadResult', uploadResult)
+
+      updatedUser = await userModel.update(userId, { avatar: uploadResult.secure_url })
     } else {
       // Cập nhật thông tin người dùng
       const updateData = {
