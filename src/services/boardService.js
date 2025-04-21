@@ -8,7 +8,7 @@ import { columnModel } from '~/models/columnModel'
 import { cardModel } from '~/models/cardModel'
 import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '~/utils/constants'
 
-const createNew = async (reqBody) => {
+const createNew = async (userId, reqBody) => {
   try {
     // Xử lý dữ liệu trước khi lưu vào database
     const newBoard = {
@@ -17,7 +17,7 @@ const createNew = async (reqBody) => {
     }
 
     // Gọi tới tầng Model để lưu newBoard vào database
-    const createBoard = await boardModel.createNew(newBoard)
+    const createBoard = await boardModel.createNew(userId, newBoard)
 
     // Lấy dữ liệu board vừa tạo ra
     const getNewBoard = await boardModel.findOneById(createBoard.insertedId)
@@ -28,9 +28,9 @@ const createNew = async (reqBody) => {
   } catch (error) { throw error }
 }
 
-const getDetails = async (boardId) => {
+const getDetails = async (userId, boardId) => {
   try {
-    const board = await boardModel.getDetails(boardId)
+    const board = await boardModel.getDetails(userId, boardId)
     if (!board) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
 
     // Clone board ra một bản sao để tránh ảnh hưởng dữ liệu gốc

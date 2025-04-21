@@ -34,10 +34,14 @@ const INVALID_UPDATE_FIELDS = ['_id', 'createAt']
 const validateBeforeCreate = async (data) => {
   return await BOADRD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
-const createNew = async (data) => {
+const createNew = async (userId, data) => {
   try {
     const validateData = await validateBeforeCreate(data)
-    const createBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(validateData)
+    const newBoardToAdd = {
+      ...validateData,
+      ownerIds: [new ObjectId(userId)]
+    }
+    const createBoard = await GET_DB().collection(BOARD_COLLECTION_NAME).insertOne(newBoardToAdd)
     return createBoard
   } catch (error) {
     throw new Error(error)
@@ -54,14 +58,22 @@ const findOneById = async (id) => {
 }
 
 // Query tổng hợp (aggregate) dữ liệu Column và Card
-const getDetails = async (id) => {
+const getDetails = async (userId, boardId) => {
   try {
+    const queryConditions = [
+      // Điều kiện 1: Board có id = boardId
+      { _id: new ObjectId(boardId) },
+      // Điều kiện 2: Board chưa bị xóa.
+      { _destroy: false },
+      // Điều kiện 03: cái thằng userId đang thực hiện request này nó phải thuộc vào một trong 2 cái mảng ownerIds hoặc memberIds, sử dụng toán tử $all của mongodb
+      { $or: [
+        { ownerIds: { $all: [new ObjectId(userId)] } },
+        { memberIds: { $all: [new ObjectId(userId)] } }
+      ] }
+    ]
     // const result = await GET_DB().collection(BOARD_COLLECTION_NAME).findOne({ _id: new ObjectId(id) })
     const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
-      { $match: {
-        _id: new ObjectId(id),
-        _destroy: false
-      } },
+      { $match: { $and: queryConditions } },
       { $lookup: {
         from: columnModel.COLUMN_COLLECTION_NAME,
         localField: '_id',
