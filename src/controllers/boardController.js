@@ -12,9 +12,10 @@ const createNew = async (req, res, next) => {
     // console.log(req.files)
     // console.log(req.cookies)
     // console.log(req.jwtDecoded)
+    const userId = req.jwtDecoded._id
 
     // Điều hướng dữ liệu sang tầng service
-    const createNewBoard = await boardService.createNew(req.body)
+    const createNewBoard = await boardService.createNew(userId, req.body)
 
     // Có kết quả thì trả về phía client
     res.status(StatusCodes.CREATED).json(createNewBoard)
@@ -23,10 +24,11 @@ const createNew = async (req, res, next) => {
 
 const getDetails = async (req, res, next) => {
   try {
+    const userId = req.jwtDecoded._id
     // console.log(req.params)
     const boardId = req.params.id
 
-    const board = await boardService.getDetails(boardId)
+    const board = await boardService.getDetails(userId, boardId)
 
     // Có kết quả thì trả về phía client
     res.status(StatusCodes.OK).json(board)
