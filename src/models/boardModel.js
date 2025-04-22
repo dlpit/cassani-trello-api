@@ -187,9 +187,9 @@ const getBoards = async (userId, page, itemsPerPage) => {
       { collation: { locale: 'en' } }
     ).toArray()
 
-    console.log('query: ', query)
+    // console.log('query: ', query)
     const res = query[0]
-    console.log('res.queryTotalBoards[0]: ', res.queryTotalBoards[0])
+    // console.log('res.queryTotalBoards[0]: ', res.queryTotalBoards[0])
 
     return {
       boards: res.queryBoards || [],
