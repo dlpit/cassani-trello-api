@@ -13,6 +13,11 @@ export const corsOptions = {
     // Ngươc lại nếu là môi trường production thì còn 1 trường hợp nữa cần xử lý
     // ENV.BUILD_MODE === 'production'
 
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      return callback(null, true)
+    }
+
     // Kiểm tra xem origin có phải là domain được chấp nhận hay không
     if (WHITELIST_DOMAINS.includes(origin)) {
       return callback(null, true)
@@ -26,5 +31,8 @@ export const corsOptions = {
   optionsSuccessStatus: 200,
 
   // CORS sẽ cho phép nhận cookies từ request
-  credentials: true
+  credentials: true,
+  
+  // Add additional headers for auth support
+  exposedHeaders: ['Authorization', 'Content-Type']
 }

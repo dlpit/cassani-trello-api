@@ -40,7 +40,12 @@ const login = async (req, res, next) => {
       maxAge: ms('14 days')
     })
 
-    res.status(StatusCodes.OK).json(result)
+    // Include accessToken in the response body for non-localhost environments
+    // This will allow the frontend to store it in localStorage
+    res.status(StatusCodes.OK).json({
+      ...result,
+      accessToken: result.accessToken
+    })
   } catch (error) { next(error) }
 }
 
@@ -62,7 +67,11 @@ const refreshToken = async (req, res, next) => {
       maxAge: ms('14 days')
     })
 
-    res.status(StatusCodes.OK).json(result)
+    // Include accessToken in the response body for non-localhost environments
+    res.status(StatusCodes.OK).json({
+      ...result,
+      accessToken: result.accessToken
+    })
   } catch (error) {
     next(new ApiError(StatusCodes.FORBIDDEN, 'Please login to continue!'))
   }
