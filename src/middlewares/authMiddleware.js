@@ -4,10 +4,21 @@ import { JwtProvider } from '~/providers/JwtProvider'
 import { ENV } from '~/config/environment'
 
 const isAuthorzied = async (req, res, next) => {
-  const clientAccessToken = req.cookies.accessToken
-  if (!clientAccessToken) {
-    next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized (Token not found)'))
+  // Check for token in cookies (default method)
+  let clientAccessToken = req.cookies?.accessToken
+  
+  // If not in cookies, check authorization header (for production/deployed environments)
+  if (!clientAccessToken && req.headers.authorization) {
+    const authHeader = req.headers.authorization
+    if (authHeader.startsWith('Bearer ')) {
+      clientAccessToken = authHeader.substring(7)
+    }
   }
+  
+  if (!clientAccessToken) {
+    return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Unauthorized (Token not found)'))
+  }
+  
   try {
     const accessTokenDecoded = await JwtProvider.verifyToken(
       clientAccessToken,
@@ -22,8 +33,7 @@ const isAuthorzied = async (req, res, next) => {
 
     // Trả về mã lỗi 401 khi accessToken hết hạnt
     if (error?.message?.includes('jwt expired')) {
-      next(new ApiError(StatusCodes.GONE, 'Need to refresh token!'))
-      return
+      return next(new ApiError(StatusCodes.GONE, 'Need to refresh token!'))
     }
 
     // Đăng xuất người dùng khi accessToken không hợp lệ
