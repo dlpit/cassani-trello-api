@@ -7,7 +7,7 @@ import ApiError from '~/utils/ApiError'
 export const corsOptions = {
   origin: function (origin, callback) {
     // Nêu là môi trường dev thì cho phép tất cả các domain
-    if (ENV.BUILD_MODE === 'dev') {
+    if (ENV.BUILD_MODE === 'dev' || !origin) {
       return callback(null, true)
     }
     // Ngươc lại nếu là môi trường production thì còn 1 trường hợp nữa cần xử lý
