@@ -12,4 +12,8 @@ Router.route('/board')
     invitationController.createNewBoardInvitation
   )
 
+// Get danh sách lời mời - invitations by User
+Router.route('/')
+  .get(authMiddleware.isAuthorzied, invitationController.getInvitations)
+
 export const invitationRoute = Router
