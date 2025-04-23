@@ -8,6 +8,11 @@ import { ENV } from '~/config/environment'
 import { APIs_V1 } from '~/routes/v1'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware'
 import cookieParser from 'cookie-parser'
+// Xử lý socket real-time với gói socket.io
+// https://socket.io/get-started/chat/#integrating-socketio
+import http from 'http'
+import socketIo from 'socket.io'
+import { inviteUserToBoardSocket } from '~/sockets/inviteUserToBoardSocket'
 
 const START_SERVER = () => {
   const app = express()
@@ -32,14 +37,23 @@ const START_SERVER = () => {
   // Middleware xử lý lỗi tập trung
   app.use(errorHandlingMiddleware)
 
+  // Tạo mới một cái server bọc thằng app của express để cấu hình tính năng real-time với socket.io
+  const server = http.createServer(app)
+  // Khởi tạo biến io với server và cấu hình cors
+  const io = socketIo(server, { cors: corsOptions })
+  // Bắt đầu lắng nghe các socket request
+  io.on('connection', (socket) => {
+    inviteUserToBoardSocket(socket)
+  })
+
   if (ENV.BUILD_MODE === 'production') {
     // Môi trường production
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log(`Production ${ENV.AUTHOR} running at Port: ${process.env.PORT}`)
     })
   } else {
     // Môi trương development
-    app.listen(ENV.LOCAL_DEV_APP_PORT, ENV.LOCAL_DEV_APP_HOST, () => {
+    server.listen(ENV.LOCAL_DEV_APP_PORT, ENV.LOCAL_DEV_APP_HOST, () => {
       console.log(`Hello ${ENV.AUTHOR} am running at http://${ENV.LOCAL_DEV_APP_HOST}:${ENV.LOCAL_DEV_APP_PORT}/`)
     })
   }
