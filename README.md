@@ -79,7 +79,7 @@ src/
 1. Clone the repository:
 
    ```bash
-   git clone <https://github.com/dlpit/cassani-trello-api>
+   git clone https://github.com/dlpit/cassani-trello-api
    cd cassani-trello-api
    ```
 
