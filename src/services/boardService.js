@@ -85,6 +85,24 @@ const moveCardtoDifferentColumn = async (reqBody) => {
   } catch (error) { throw error }
 }
 
+const toggleStar = async (boardId) => {
+  try {
+    // Lấy board hiện tại
+    const currentBoard = await boardModel.findOneById(boardId)
+    if (!currentBoard) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+    
+    // Đảo ngược giá trị hiện tại của trường starred
+    const updateData = {
+      starred: !currentBoard.starred,
+      updateAt: Date.now()
+    }
+    
+    // Cập nhật trạng thái starred
+    const result = await boardModel.update(boardId, updateData)
+    return result
+  } catch (error) { throw error }
+}
+
 const getBoards = async (userId, page, itemsPerPage, queryFilters) => {
   try {
     // Nếu không tồn tại page hoặc itemsPerPage từ phía FE thì BE sẽ cần phải luôn gán giá trị mặc định
@@ -107,5 +125,6 @@ export const boardService = {
   getDetails,
   update,
   moveCardtoDifferentColumn,
+  toggleStar,
   getBoards
 }

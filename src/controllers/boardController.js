@@ -1,4 +1,3 @@
-
 /* eslint-disable no-console */
 import { StatusCodes } from 'http-status-codes'
 import { boardService } from '~/services/boardService'
@@ -53,6 +52,15 @@ const moveCardtoDifferentColumn = async (req, res, next) => {
   } catch (error) { next(error) }
 }
 
+const toggleStar = async (req, res, next) => {
+  try {
+    const boardId = req.params.id
+    const result = await boardService.toggleStar(boardId)
+
+    res.status(StatusCodes.OK).json(result)
+  } catch (error) { next(error) }
+}
+
 const getBoards = async (req, res, next) => {
   try {
     const userId = req.jwtDecoded._id
@@ -71,5 +79,6 @@ export const boardController = {
   getDetails,
   update,
   moveCardtoDifferentColumn,
+  toggleStar,
   getBoards
 }
