@@ -13,6 +13,10 @@ Router.route('/:id')
   .get(authMiddleware.isAuthorzied, boardController.getDetails)
   .put(authMiddleware.isAuthorzied, boardValidation.update, boardController.update) // Update board
 
+// API để toggle trạng thái starred của board
+Router.route('/:id/toggle-star')
+  .put(authMiddleware.isAuthorzied, boardController.toggleStar)
+
 // API khi di chuyển card sang một column khác
 Router.route('/supports/moving_card')
   .put(authMiddleware.isAuthorzied, boardValidation.moveCardtoDifferentColumn, boardController.moveCardtoDifferentColumn)
