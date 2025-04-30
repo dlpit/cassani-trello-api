@@ -90,6 +90,7 @@ const toggleStar = async (boardId) => {
     // Lấy board hiện tại
     const currentBoard = await boardModel.findOneById(boardId)
     if (!currentBoard) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
+    if (currentBoard._destroy) throw new ApiError(StatusCodes.NOT_FOUND, 'Board not found')
     
     // Đảo ngược giá trị hiện tại của trường starred
     const updateData = {
@@ -99,7 +100,13 @@ const toggleStar = async (boardId) => {
     
     // Cập nhật trạng thái starred
     const result = await boardModel.update(boardId, updateData)
-    return result
+    
+    // Return only required fields (_id, title, starred)
+    return {
+      _id: result._id,
+      title: result.title,
+      starred: result.starred
+    }
   } catch (error) { throw error }
 }
 
